@@ -1,7 +1,6 @@
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
-import Equipos from './pages/Equipos';
 import Accesos from './pages/Accesos';
 import Respaldos from './pages/Respaldos';
 import Proveedores from './pages/Proveedores';
@@ -13,7 +12,6 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/equipos" element={<Equipos />} />
           <Route path="/accesos" element={<Accesos />} />
           <Route path="/respaldos" element={<Respaldos />} />
           <Route path="/proveedores" element={<Proveedores />} />

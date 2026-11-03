@@ -1,4 +1,4 @@
-import type { Acceso, Equipo, NivelRiesgo, Proveedor, Respaldo, Riesgo } from '../types';
+import type { Acceso, NivelRiesgo, Proveedor, Respaldo, Riesgo } from '../types';
 
 /** puntuación = (probabilidad / 100) × impacto */
 export function calcularPuntuacion(probabilidad: number, impacto: number): number {
@@ -40,17 +40,14 @@ export const accesoRequiereRevision = (a: Acceso) =>
 export const respaldoPendiente = (r: Respaldo) =>
   r.estado !== 'Correcto' || r.resultadoRestauracion !== 'Exitosa';
 
-export const antivirusPendiente = (antivirus: string) => {
-  const v = (antivirus || '').toLowerCase();
-  return !v || v.includes('sin') || v.includes('pendiente') || v.includes('vencid');
-};
+export const estaAbierto = (r: Riesgo) => r.estado === 'Abierto' || r.estado === 'En proceso';
 
 export type Severidad = 'error' | 'warning' | 'info';
 
 export interface Alerta {
   id: string;
   severidad: Severidad;
-  modulo: 'Equipos' | 'Accesos' | 'Respaldos' | 'Proveedores' | 'Riesgos';
+  modulo: 'Accesos' | 'Respaldos' | 'Proveedores' | 'Riesgos';
   titulo: string;
   detalle: string;
   ruta: string;
@@ -58,7 +55,6 @@ export interface Alerta {
 
 /** Genera alertas automáticamente a partir de los datos almacenados. */
 export function generarAlertas(
-  equipos: Equipo[],
   accesos: Acceso[],
   respaldos: Respaldo[],
   proveedores: Proveedor[],
@@ -66,15 +62,6 @@ export function generarAlertas(
 ): Alerta[] {
   const alertas: Alerta[] = [];
   const add = (a: Alerta) => alertas.push(a);
-
-  equipos.forEach((e) => {
-    if (e.estado === 'Obsoleto')
-      add({ id: `eq-o-${e.id}`, severidad: 'error', modulo: 'Equipos', titulo: 'Equipo obsoleto', detalle: `${e.nombre} (${e.area}) debe planificarse para reemplazo.`, ruta: '/equipos' });
-    if (e.estado === 'Requiere revisión')
-      add({ id: `eq-r-${e.id}`, severidad: 'warning', modulo: 'Equipos', titulo: 'Equipo requiere revisión', detalle: `${e.nombre} (${e.area}) presenta lentitud o fallas.`, ruta: '/equipos' });
-    if (e.estado !== 'Obsoleto' && antivirusPendiente(e.antivirus))
-      add({ id: `eq-av-${e.id}`, severidad: 'warning', modulo: 'Equipos', titulo: 'Protección antimalware sin comprobar', detalle: `${e.nombre}: antivirus "${e.antivirus || 'no registrado'}".`, ruta: '/equipos' });
-  });
 
   accesos.forEach((a) => {
     if (a.estado === 'Revocado') return;
@@ -112,9 +99,11 @@ export function generarAlertas(
   });
 
   riesgos.forEach((r) => {
-    if (r.nivel === 'Crítico' && r.estado === 'Abierto')
+    if (r.tipo === 'Riesgo' && r.nivel === 'Crítico' && r.estado === 'Abierto')
       add({ id: `rg-c-${r.id}`, severidad: 'error', modulo: 'Riesgos', titulo: 'Riesgo crítico abierto', detalle: `${r.codigo} · ${r.nombre}`, ruta: '/riesgos' });
-    if (r.fechaCompromiso && diasDesde(r.fechaCompromiso) > 0 && (r.estado === 'Abierto' || r.estado === 'En proceso'))
+    if (r.tipo === 'Hallazgo' && estaAbierto(r))
+      add({ id: `rg-h-${r.id}`, severidad: 'warning', modulo: 'Riesgos', titulo: 'Hallazgo abierto', detalle: `${r.codigo} · ${r.nombre}`, ruta: '/riesgos' });
+    if (r.fechaCompromiso && diasDesde(r.fechaCompromiso) > 0 && estaAbierto(r))
       add({ id: `rg-f-${r.id}`, severidad: 'warning', modulo: 'Riesgos', titulo: 'Fecha compromiso vencida', detalle: `${r.codigo} · ${r.nombre}`, ruta: '/riesgos' });
   });
 

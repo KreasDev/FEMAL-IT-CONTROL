@@ -16,7 +16,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
-import ComputerOutlinedIcon from '@mui/icons-material/ComputerOutlined';
 import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined';
 import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined';
 import HandshakeOutlinedIcon from '@mui/icons-material/HandshakeOutlined';
@@ -33,7 +32,6 @@ const DRAWER_WIDTH = 260;
 
 export const NAV: { to: string; label: string; icon: ReactNode }[] = [
   { to: '/', label: 'Inicio', icon: <DashboardOutlinedIcon /> },
-  { to: '/equipos', label: 'Equipos', icon: <ComputerOutlinedIcon /> },
   { to: '/accesos', label: 'Accesos', icon: <VpnKeyOutlinedIcon /> },
   { to: '/respaldos', label: 'Respaldos', icon: <BackupOutlinedIcon /> },
   { to: '/proveedores', label: 'Proveedores', icon: <HandshakeOutlinedIcon /> },

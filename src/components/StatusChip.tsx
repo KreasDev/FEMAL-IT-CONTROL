@@ -4,11 +4,6 @@ type ChipColor = 'success' | 'warning' | 'error' | 'info' | 'default' | 'primary
 
 // Un solo mapa de colores para todos los estados del sistema
 const COLORS: Record<string, ChipColor> = {
-  // Equipos
-  Operativo: 'success',
-  'Requiere revisión': 'warning',
-  Mantenimiento: 'info',
-  Obsoleto: 'error',
   // Accesos
   Activo: 'success',
   'Pendiente de revisión': 'warning',

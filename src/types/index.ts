@@ -1,23 +1,4 @@
-export type EstadoEquipo = 'Operativo' | 'Requiere revisión' | 'Mantenimiento' | 'Obsoleto';
-
-export interface Equipo {
-  id: string;
-  nombre: string;
-  area: string;
-  usuarioResponsable: string;
-  tipo: string;
-  marca: string;
-  modelo: string;
-  procesador: string;
-  ram: string;
-  almacenamiento: string;
-  sistemaOperativo: string;
-  fechaAdquisicion: string;
-  antivirus: string;
-  ultimaRevision: string;
-  estado: EstadoEquipo;
-  observaciones: string;
-}
+// El inventario de equipos se administra externamente con Lansweeper.
 
 export type TipoCuenta = 'Individual' | 'Compartida';
 export type EstadoAcceso = 'Activo' | 'Pendiente de revisión' | 'Revocado';

@@ -16,8 +16,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import ComputerOutlinedIcon from '@mui/icons-material/ComputerOutlined';
-import BuildCircleOutlinedIcon from '@mui/icons-material/BuildCircleOutlined';
+import LanOutlinedIcon from '@mui/icons-material/LanOutlined';
+import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
 import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined';
 import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined';
 import HandshakeOutlinedIcon from '@mui/icons-material/HandshakeOutlined';
@@ -26,7 +26,7 @@ import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import StatusChip from '../components/StatusChip';
 import { useDashboardData } from '../services/useDashboardData';
-import { accesoRequiereRevision, respaldoPendiente, type Severidad } from '../services/rules';
+import { accesoRequiereRevision, estaAbierto, respaldoPendiente, type Severidad } from '../services/rules';
 import type { NivelRiesgo } from '../types';
 
 interface KpiProps {
@@ -72,19 +72,19 @@ const NIVELES: { nivel: NivelRiesgo; color: string }[] = [
 ];
 
 export default function Dashboard() {
-  const { equipos, accesos, respaldos, proveedores, riesgos, alertas } = useDashboardData();
+  const { accesos, respaldos, proveedores, riesgos, alertas } = useDashboardData();
   const navigate = useNavigate();
   const [filtro, setFiltro] = useState<Severidad | 'todas'>('todas');
 
-  const abiertos = riesgos.filter((r) => r.estado === 'Abierto' || r.estado === 'En proceso');
+  const abiertos = riesgos.filter(estaAbierto);
+  const riesgosAbiertos = abiertos.filter((r) => r.tipo === 'Riesgo');
   const kpis: KpiProps[] = [
-    { label: 'Total de equipos', value: equipos.length, icon: <ComputerOutlinedIcon />, color: '#0b2545', hint: 'Inventario tecnológico registrado', to: '/equipos' },
-    { label: 'Equipos que requieren revisión', value: equipos.filter((e) => e.estado !== 'Operativo').length, icon: <BuildCircleOutlinedIcon />, color: '#ed6c02', hint: 'Revisión, mantenimiento u obsoletos', to: '/equipos' },
-    { label: 'Respaldos pendientes', value: respaldos.filter(respaldoPendiente).length, icon: <BackupOutlinedIcon />, color: '#ed6c02', hint: 'Sin validar o sin restauración exitosa', to: '/respaldos' },
     { label: 'Accesos pendientes de revisión', value: accesos.filter(accesoRequiereRevision).length, icon: <VpnKeyOutlinedIcon />, color: '#ed6c02', hint: 'Pendientes o > 90 días sin revisar', to: '/accesos' },
+    { label: 'Respaldos pendientes', value: respaldos.filter(respaldoPendiente).length, icon: <BackupOutlinedIcon />, color: '#ed6c02', hint: 'Sin validar o sin restauración exitosa', to: '/respaldos' },
     { label: 'Proveedores activos', value: proveedores.filter((p) => p.estado === 'Activo').length, icon: <HandshakeOutlinedIcon />, color: '#2a6fdb', hint: `${proveedores.length} proveedores registrados`, to: '/proveedores' },
-    { label: 'Riesgos críticos', value: abiertos.filter((r) => r.nivel === 'Crítico').length, icon: <GppBadOutlinedIcon />, color: '#d32f2f', hint: 'Abiertos o en proceso', to: '/riesgos' },
-    { label: 'Riesgos altos', value: abiertos.filter((r) => r.nivel === 'Alto').length, icon: <WarningAmberOutlinedIcon />, color: '#ed6c02', hint: 'Abiertos o en proceso', to: '/riesgos' },
+    { label: 'Riesgos críticos', value: riesgosAbiertos.filter((r) => r.nivel === 'Crítico').length, icon: <GppBadOutlinedIcon />, color: '#d32f2f', hint: 'Abiertos o en proceso', to: '/riesgos' },
+    { label: 'Riesgos altos', value: riesgosAbiertos.filter((r) => r.nivel === 'Alto').length, icon: <WarningAmberOutlinedIcon />, color: '#ed6c02', hint: 'Abiertos o en proceso', to: '/riesgos' },
+    { label: 'Hallazgos abiertos', value: abiertos.filter((r) => r.tipo === 'Hallazgo').length, icon: <FactCheckOutlinedIcon />, color: '#7b1fa2', hint: 'Hallazgos de auditoría por atender', to: '/riesgos' },
   ];
 
   const prioritarios = [...abiertos].sort((a, b) => b.puntuacion - a.puntuacion).slice(0, 8);
@@ -103,6 +103,31 @@ export default function Dashboard() {
       </Box>
 
       <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }, mb: 3 }}>
+        {/* Inventario tecnológico: herramienta externa, sin integración */}
+        <Card sx={{ bgcolor: 'primary.main', color: '#fff', border: 0 }}>
+          <CardContent>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <Box>
+                <Typography variant="body2" sx={{ fontWeight: 500, opacity: 0.8 }}>
+                  Inventario tecnológico — Lansweeper
+                </Typography>
+                <Typography variant="h6" sx={{ mt: 0.5, lineHeight: 1.3 }}>
+                  Inventario administrado con Lansweeper
+                </Typography>
+              </Box>
+              <Box sx={{ width: 44, height: 44, borderRadius: 2, display: 'grid', placeItems: 'center', bgcolor: 'rgba(255,255,255,0.14)', flexShrink: 0 }}>
+                <LanOutlinedIcon />
+              </Box>
+            </Stack>
+            <Typography variant="body2" sx={{ opacity: 0.85 }}>
+              Hardware, software y dispositivos de red
+            </Typography>
+            <Chip size="small" label="Herramienta externa" sx={{ mt: 1, bgcolor: 'rgba(255,255,255,0.16)', color: '#fff' }} />
+            <Typography variant="caption" sx={{ display: 'block', mt: 1, opacity: 0.7 }}>
+              El descubrimiento e inventario de activos tecnológicos se realiza mediante Lansweeper como herramienta complementaria.
+            </Typography>
+          </CardContent>
+        </Card>
         {kpis.map((k) => (
           <Kpi key={k.label} {...k} />
         ))}

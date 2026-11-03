@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 
 // Claves de localStorage por módulo
 export const KEYS = {
-  equipos: 'femal_equipos',
   accesos: 'femal_accesos',
   respaldos: 'femal_respaldos',
   proveedores: 'femal_proveedores',

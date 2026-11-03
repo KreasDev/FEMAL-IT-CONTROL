@@ -19,7 +19,6 @@ import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined';
 import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined';
 import HandshakeOutlinedIcon from '@mui/icons-material/HandshakeOutlined';
-import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
@@ -35,7 +34,6 @@ export const NAV: { to: string; label: string; icon: ReactNode }[] = [
   { to: '/accesos', label: 'Accesos', icon: <VpnKeyOutlinedIcon /> },
   { to: '/respaldos', label: 'Respaldos', icon: <BackupOutlinedIcon /> },
   { to: '/proveedores', label: 'Proveedores', icon: <HandshakeOutlinedIcon /> },
-  { to: '/riesgos', label: 'Riesgos y hallazgos', icon: <ReportProblemOutlinedIcon /> },
 ];
 
 export default function Layout() {

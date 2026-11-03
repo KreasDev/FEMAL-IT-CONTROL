@@ -1,6 +1,6 @@
-import type { Acceso, Proveedor, Respaldo, Riesgo } from '../types';
+import type { Acceso, Proveedor, Respaldo } from '../types';
 import { KEYS, readList, writeList } from '../services/storage';
-import { calcularNivel, calcularPuntuacion, haceDias } from '../services/rules';
+import { haceDias } from '../services/rules';
 
 // Las fechas son relativas a hoy para que las alertas siempre tengan sentido en la demo.
 
@@ -28,25 +28,11 @@ const proveedores: Proveedor[] = [
   { id: 'pv3', proveedor: 'VolumeTrack Soluciones', servicio: 'Control volumétrico', responsableInterno: 'Gerente General', contacto: 'contacto@volumetrack.mx', contratoDisponible: false, fechaInicio: `${hoy - 3}-05-01`, fechaVencimiento: haceDias(15), tiempoRespuesta: '48 horas', accesoRemoto: true, estado: 'Vencido', observaciones: 'No se localizó copia del contrato firmado.', incidencias: [] },
 ];
 
-function riesgo(r: Omit<Riesgo, 'puntuacion' | 'nivel'>): Riesgo {
-  const puntuacion = calcularPuntuacion(r.probabilidad, r.impacto);
-  return { ...r, puntuacion, nivel: calcularNivel(puntuacion) };
-}
-
-const riesgos: Riesgo[] = [
-  riesgo({ id: 'rg1', codigo: 'R1', tipo: 'Riesgo', nombre: 'Malware, ransomware u otro software malicioso', descripcion: 'Infección que cifre o dañe la información contable.', area: 'Contabilidad', probabilidad: 70, impacto: 5, evidencia: 'Protección antimalware pendiente de comprobar en algunos equipos.', recomendacion: 'Verificar antivirus activo y actualizado en todos los equipos.', responsable: 'Gerente General', fechaCompromiso: haceDias(-30), estado: 'Abierto' }),
-  riesgo({ id: 'rg2', codigo: 'R2', tipo: 'Riesgo', nombre: 'Errores humanos, phishing o contraseñas inseguras', descripcion: 'Usuarios que caen en engaños o usan contraseñas débiles.', area: 'Usuarios', probabilidad: 80, impacto: 4, evidencia: 'Las contraseñas no se renuevan periódicamente.', recomendacion: 'Establecer política de contraseñas y capacitación.', responsable: 'Gerente General', fechaCompromiso: haceDias(-45), estado: 'Abierto' }),
-  riesgo({ id: 'rg3', codigo: 'R3', tipo: 'Riesgo', nombre: 'Interrupciones administrativas por equipos obsoletos', descripcion: 'Equipos con lentitud, fallas o sin soporte.', area: 'Infraestructura', probabilidad: 80, impacto: 4, evidencia: 'Equipos con lentitud y sistemas operativos sin soporte identificados en Lansweeper.', recomendacion: 'Plan de renovación de equipos.', responsable: 'Gerente General', fechaCompromiso: haceDias(-60), estado: 'En proceso' }),
-  riesgo({ id: 'rg6', codigo: 'R6', tipo: 'Riesgo', nombre: 'Respaldo que no pueda recuperarse cuando sea necesario', descripcion: 'Los respaldos automáticos no han sido probados.', area: 'Contabilidad', probabilidad: 60, impacto: 5, evidencia: 'No existe registro de pruebas de restauración.', recomendacion: 'Realizar prueba de restauración trimestral.', responsable: 'Gerente General', fechaCompromiso: haceDias(-15), estado: 'Abierto' }),
-  riesgo({ id: 'rg8', codigo: 'R8', tipo: 'Riesgo', nombre: 'Accesos o permisos inadecuados', descripcion: 'Cuentas compartidas o con privilegios excesivos.', area: 'Usuarios', probabilidad: 60, impacto: 4, evidencia: 'Administración de accesos poco formal.', recomendacion: 'Revisión trimestral de accesos y cuentas individuales.', responsable: 'Gerente General', fechaCompromiso: haceDias(-30), estado: 'Abierto' }),
-  riesgo({ id: 'hl1', codigo: 'H1', tipo: 'Hallazgo', nombre: 'Falta de inventario tecnológico completo', descripcion: 'No existe un registro centralizado de equipos y software.', area: 'Infraestructura', probabilidad: 100, impacto: 3, evidencia: 'Se implementa Lansweeper para descubrimiento e inventario de activos.', recomendacion: 'Mantener el inventario actualizado mediante Lansweeper.', responsable: 'Gerente General', fechaCompromiso: haceDias(-10), estado: 'En proceso' }),
-  riesgo({ id: 'hl2', codigo: 'H2', tipo: 'Hallazgo', nombre: 'Dependencia de proveedores tecnológicos externos', descripcion: 'Servicios críticos dependen de terceros sin contratos vigentes.', area: 'Dirección', probabilidad: 70, impacto: 3, evidencia: 'Contrato de control volumétrico no localizado.', recomendacion: 'Formalizar contratos y tiempos de respuesta.', responsable: 'Gerente General', fechaCompromiso: haceDias(-40), estado: 'Abierto' }),
-];
-
 /** Carga los datos demo solo si nunca se han inicializado. */
 export function initDemoData(force = false): void {
-  // Limpia la clave del antiguo módulo Equipos (ahora el inventario está en Lansweeper)
+  // Limpia claves de módulos retirados: Equipos (ahora en Lansweeper) y Riesgos (en el documento de auditoría)
   localStorage.removeItem('femal_equipos');
+  localStorage.removeItem('femal_riesgos');
   if (!force && localStorage.getItem(KEYS.initialized)) {
     // Migración: los respaldos con el formato anterior se reemplazan por las revisiones demo
     const guardados = readList<Partial<Respaldo>>(KEYS.respaldos);
@@ -56,6 +42,5 @@ export function initDemoData(force = false): void {
   writeList(KEYS.accesos, accesos);
   writeList(KEYS.respaldos, respaldos);
   writeList(KEYS.proveedores, proveedores);
-  writeList(KEYS.riesgos, riesgos);
   localStorage.setItem(KEYS.initialized, new Date().toISOString());
 }

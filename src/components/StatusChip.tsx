@@ -21,18 +21,8 @@ const COLORS: Record<string, ChipColor> = {
   'Revisión pendiente': 'warning',
   Vencido: 'error',
   Abierta: 'error',
-  Resuelta: 'success',
-  // Riesgos
-  Crítico: 'error',
-  Alto: 'warning',
-  Medio: 'info',
-  Bajo: 'success',
-  Abierto: 'error',
   'En proceso': 'info',
-  Atendido: 'success',
-  Aceptado: 'default',
-  Riesgo: 'primary',
-  Hallazgo: 'secondary',
+  Resuelta: 'success',
 };
 
 export default function StatusChip({ value, variant = 'filled' }: { value: string; variant?: 'filled' | 'outlined' }) {

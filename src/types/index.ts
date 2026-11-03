@@ -70,25 +70,3 @@ export interface Proveedor {
   observaciones: string;
   incidencias: Incidencia[];
 }
-
-export type TipoRiesgo = 'Riesgo' | 'Hallazgo';
-export type NivelRiesgo = 'Crítico' | 'Alto' | 'Medio' | 'Bajo';
-export type EstadoRiesgo = 'Abierto' | 'En proceso' | 'Atendido' | 'Aceptado';
-
-export interface Riesgo {
-  id: string;
-  codigo: string;
-  tipo: TipoRiesgo;
-  nombre: string;
-  descripcion: string;
-  area: string;
-  probabilidad: number; // porcentaje 0-100
-  impacto: number; // 1-5
-  puntuacion: number;
-  nivel: NivelRiesgo;
-  evidencia: string;
-  recomendacion: string;
-  responsable: string;
-  fechaCompromiso: string;
-  estado: EstadoRiesgo;
-}

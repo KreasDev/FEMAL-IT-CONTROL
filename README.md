@@ -12,16 +12,19 @@ Sistema de seguimiento y auditoría de controles de TI creado a partir de la Aud
 
 FEMAL IT Control no reemplaza herramientas especializadas: no hace inventario técnico ni ejecuta respaldos.
 Sirve para comprobar controles, registrar evidencia, identificar incumplimientos, generar alertas,
-asignar responsables y dar seguimiento a riesgos y hallazgos. No hay integración con las herramientas externas
+asignar responsables y dar seguimiento. No hay integración con las herramientas externas
 (una integración automática queda como trabajo futuro).
 
 ## Módulos
+
+La matriz de riesgos forma parte del documento de Auditoría Informática y justifica los controles que esta
+aplicación supervisa; no se administra aquí.
+
 
 - **Inicio**: ecosistema de control de TI, indicadores de cumplimiento y alertas automáticas.
 - **Accesos**: usuarios, permisos y revisiones (alerta si pasan más de 90 días sin revisar). No guarda contraseñas.
 - **Respaldos**: auditoría de evidencia de respaldos (Conforme / Pendiente de verificar / No conforme).
 - **Proveedores**: contratos, tiempos de respuesta, accesos remotos e incidencias simples.
-- **Riesgos y hallazgos**: matriz con puntuación (probabilidad × impacto) y nivel calculados.
 
 ## Ejecutar
 

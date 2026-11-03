@@ -4,7 +4,6 @@ import Dashboard from './pages/Dashboard';
 import Accesos from './pages/Accesos';
 import Respaldos from './pages/Respaldos';
 import Proveedores from './pages/Proveedores';
-import Riesgos from './pages/Riesgos';
 
 export default function App() {
   return (
@@ -15,7 +14,6 @@ export default function App() {
           <Route path="/accesos" element={<Accesos />} />
           <Route path="/respaldos" element={<Respaldos />} />
           <Route path="/proveedores" element={<Proveedores />} />
-          <Route path="/riesgos" element={<Riesgos />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

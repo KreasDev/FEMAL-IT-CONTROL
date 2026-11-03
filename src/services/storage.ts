@@ -5,7 +5,6 @@ export const KEYS = {
   accesos: 'femal_accesos',
   respaldos: 'femal_respaldos',
   proveedores: 'femal_proveedores',
-  riesgos: 'femal_riesgos',
   initialized: 'femal_initialized',
 } as const;
 

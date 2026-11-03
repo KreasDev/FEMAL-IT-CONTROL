@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { Acceso, Proveedor, Respaldo, Riesgo } from '../types';
+import type { Acceso, Proveedor, Respaldo } from '../types';
 import { KEYS, useCollection } from './storage';
 import { generarAlertas } from './rules';
 
@@ -8,12 +8,11 @@ export function useDashboardData() {
   const accesos = useCollection<Acceso>(KEYS.accesos).items;
   const respaldos = useCollection<Respaldo>(KEYS.respaldos).items;
   const proveedores = useCollection<Proveedor>(KEYS.proveedores).items;
-  const riesgos = useCollection<Riesgo>(KEYS.riesgos).items;
 
   const alertas = useMemo(
-    () => generarAlertas(accesos, respaldos, proveedores, riesgos),
-    [accesos, respaldos, proveedores, riesgos],
+    () => generarAlertas(accesos, respaldos, proveedores),
+    [accesos, respaldos, proveedores],
   );
 
-  return { accesos, respaldos, proveedores, riesgos, alertas };
+  return { accesos, respaldos, proveedores, alertas };
 }

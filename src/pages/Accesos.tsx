@@ -21,10 +21,25 @@ const fields: Field<Acceso>[] = [
   { key: 'ultimaRevision', label: 'Última revisión', type: 'date', helperText: 'Se genera alerta si supera 90 días' },
   { key: 'estado', label: 'Estado', type: 'select', options: ESTADOS, required: true },
   { key: 'privilegiosAdministrativos', label: 'Privilegios administrativos', type: 'switch' },
+  { key: 'observaciones', label: 'Observaciones', type: 'multiline', width: 'full' },
 ];
 
 const columns: Column<Acceso>[] = [
-  { label: 'Usuario', render: (a) => <Typography variant="body2" sx={{ fontWeight: 600 }}>{a.usuario}</Typography> },
+  {
+    label: 'Usuario',
+    render: (a) => (
+      <>
+        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+          {a.usuario}
+        </Typography>
+        {a.observaciones && (
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', maxWidth: 240 }}>
+            {a.observaciones}
+          </Typography>
+        )}
+      </>
+    ),
+  },
   { label: 'Área', render: (a) => a.area },
   { label: 'Equipo / sistema', render: (a) => a.equipoSistema },
   { label: 'Tipo de acceso', render: (a) => a.tipoAcceso },
@@ -75,7 +90,7 @@ export default function Accesos() {
       emptyItem={() => ({
         usuario: '', area: '', equipoSistema: '', tipoAcceso: 'Usuario estándar', autorizadoPor: 'Gerente General',
         fechaCreacion: new Date().toISOString().slice(0, 10), ultimaRevision: new Date().toISOString().slice(0, 10),
-        privilegiosAdministrativos: false, tipoCuenta: 'Individual', estado: 'Activo',
+        privilegiosAdministrativos: false, tipoCuenta: 'Individual', estado: 'Activo', observaciones: '',
       })}
     />
   );

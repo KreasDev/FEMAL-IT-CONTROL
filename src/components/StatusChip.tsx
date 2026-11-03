@@ -11,9 +11,9 @@ const COLORS: Record<string, ChipColor> = {
   Individual: 'primary',
   Compartida: 'warning',
   // Respaldos
-  Correcto: 'success',
-  'Pendiente de validar': 'warning',
-  Fallido: 'error',
+  Conforme: 'success',
+  'Pendiente de verificar': 'warning',
+  'No conforme': 'error',
   Exitosa: 'success',
   Fallida: 'error',
   'No realizada': 'default',

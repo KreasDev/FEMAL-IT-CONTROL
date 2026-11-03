@@ -134,14 +134,14 @@ export default function CrudPage<T extends { id: string }>(props: Props<T>) {
     setErrors(errs);
     if (Object.keys(errs).length) return;
     save(beforeSave ? beforeSave(draft) : draft);
-    setToast(isNew ? `${singular} agregado correctamente` : `${singular} actualizado correctamente`);
+    setToast(isNew ? 'Registro agregado correctamente' : 'Registro actualizado correctamente');
     setDraft(null);
   };
 
   const handleDelete = () => {
     if (!toDelete) return;
     remove(toDelete.id);
-    setToast(`${singular} eliminado`);
+    setToast('Registro eliminado');
     setToDelete(null);
   };
 

@@ -16,23 +16,31 @@ export interface Acceso {
   privilegiosAdministrativos: boolean;
   tipoCuenta: TipoCuenta;
   estado: EstadoAcceso;
+  observaciones: string;
 }
 
-export type EstadoRespaldo = 'Correcto' | 'Pendiente de validar' | 'Fallido';
+export type EstadoAuditoria = 'Conforme' | 'Pendiente de verificar' | 'No conforme';
 export type ResultadoRestauracion = 'Exitosa' | 'Fallida' | 'No realizada';
 
+// Cada registro es una revisión de evidencia de un respaldo.
+// El respaldo lo ejecuta una herramienta externa (p. ej. Windows Server Backup), no esta aplicación.
 export interface Respaldo {
   id: string;
-  sistemaEquipo: string;
+  sistema: string;
+  herramienta: string;
   responsable: string;
-  automatico: boolean;
-  frecuencia: string;
-  medio: string;
-  ubicacion: string;
-  ultimoRespaldo: string;
+  frecuenciaEsperada: string;
+  fechaProgramada: string;
+  fechaUltimoRespaldo: string;
+  respaldoEjecutado: boolean;
+  evidenciaDisponible: boolean;
+  tipoEvidencia: string;
+  ubicacionEvidencia: string;
   ultimaPruebaRestauracion: string;
   resultadoRestauracion: ResultadoRestauracion;
-  estado: EstadoRespaldo;
+  revisadoPor: string;
+  fechaRevision: string;
+  estadoAuditoria: EstadoAuditoria;
   observaciones: string;
 }
 

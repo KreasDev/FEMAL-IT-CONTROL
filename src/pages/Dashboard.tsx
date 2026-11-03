@@ -19,6 +19,9 @@ import Typography from '@mui/material/Typography';
 import LanOutlinedIcon from '@mui/icons-material/LanOutlined';
 import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
 import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined';
+import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
+import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
+import CheckIcon from '@mui/icons-material/Check';
 import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined';
 import HandshakeOutlinedIcon from '@mui/icons-material/HandshakeOutlined';
 import GppBadOutlinedIcon from '@mui/icons-material/GppBadOutlined';
@@ -64,6 +67,40 @@ function Kpi({ label, value, icon, color, hint, to }: KpiProps) {
   );
 }
 
+interface ToolCardProps {
+  icon: ReactNode;
+  etiqueta: string;
+  titulo: string;
+  texto: string;
+  descripcion: string;
+}
+
+/** Tarjeta informativa de una herramienta externa (sin integración) */
+function ToolCard({ icon, etiqueta, titulo, texto, descripcion }: ToolCardProps) {
+  return (
+    <Card>
+      <CardContent>
+        <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+          <Box>
+            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
+              {etiqueta}
+            </Typography>
+            <Typography variant="h6">{titulo}</Typography>
+          </Box>
+          <Box sx={{ width: 44, height: 44, borderRadius: 2, display: 'grid', placeItems: 'center', bgcolor: '#2a6fdb18', color: '#2a6fdb', flexShrink: 0 }}>{icon}</Box>
+        </Stack>
+        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+          {texto}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          {descripcion}
+        </Typography>
+        <Chip size="small" variant="outlined" label="Herramienta externa · informativa" sx={{ mt: 1.5 }} />
+      </CardContent>
+    </Card>
+  );
+}
+
 const NIVELES: { nivel: NivelRiesgo; color: string }[] = [
   { nivel: 'Crítico', color: '#d32f2f' },
   { nivel: 'Alto', color: '#ed6c02' },
@@ -80,7 +117,7 @@ export default function Dashboard() {
   const riesgosAbiertos = abiertos.filter((r) => r.tipo === 'Riesgo');
   const kpis: KpiProps[] = [
     { label: 'Accesos pendientes de revisión', value: accesos.filter(accesoRequiereRevision).length, icon: <VpnKeyOutlinedIcon />, color: '#ed6c02', hint: 'Pendientes o > 90 días sin revisar', to: '/accesos' },
-    { label: 'Respaldos pendientes', value: respaldos.filter(respaldoPendiente).length, icon: <BackupOutlinedIcon />, color: '#ed6c02', hint: 'Sin validar o sin restauración exitosa', to: '/respaldos' },
+    { label: 'Respaldos pendientes de comprobar', value: respaldos.filter(respaldoPendiente).length, icon: <BackupOutlinedIcon />, color: '#ed6c02', hint: 'Sin evidencia, no conformes o sin prueba de restauración', to: '/respaldos' },
     { label: 'Proveedores activos', value: proveedores.filter((p) => p.estado === 'Activo').length, icon: <HandshakeOutlinedIcon />, color: '#2a6fdb', hint: `${proveedores.length} proveedores registrados`, to: '/proveedores' },
     { label: 'Riesgos críticos', value: riesgosAbiertos.filter((r) => r.nivel === 'Crítico').length, icon: <GppBadOutlinedIcon />, color: '#d32f2f', hint: 'Abiertos o en proceso', to: '/riesgos' },
     { label: 'Riesgos altos', value: riesgosAbiertos.filter((r) => r.nivel === 'Alto').length, icon: <WarningAmberOutlinedIcon />, color: '#ed6c02', hint: 'Abiertos o en proceso', to: '/riesgos' },
@@ -102,49 +139,60 @@ export default function Dashboard() {
         </Typography>
       </Box>
 
-      <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }, mb: 3 }}>
-        {/* Inventario tecnológico: herramienta externa, sin integración */}
+      {/* Ecosistema: herramientas externas + FEMAL IT Control */}
+      <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 700 }}>
+        Ecosistema de control de TI
+      </Typography>
+      <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, mb: 3, mt: 0.5 }}>
+        <ToolCard
+          icon={<LanOutlinedIcon />}
+          etiqueta="Inventario tecnológico"
+          titulo="Lansweeper"
+          texto="Inventario y descubrimiento de activos"
+          descripcion="El inventario de hardware, software y dispositivos de red se gestiona mediante Lansweeper."
+        />
+        <ToolCard
+          icon={<SettingsBackupRestoreIcon />}
+          etiqueta="Respaldos automáticos"
+          titulo="Windows Server Backup"
+          texto="Ejecución automática de respaldos"
+          descripcion="Los respaldos del servidor son ejecutados mediante Windows Server Backup. FEMAL IT Control registra y verifica la evidencia de su ejecución."
+        />
         <Card sx={{ bgcolor: 'primary.main', color: '#fff', border: 0 }}>
           <CardContent>
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
               <Box>
-                <Typography variant="body2" sx={{ fontWeight: 500, opacity: 0.8 }}>
-                  Inventario tecnológico — Lansweeper
+                <Typography variant="caption" sx={{ opacity: 0.75, fontWeight: 600 }}>
+                  Auditoría y seguimiento
                 </Typography>
-                <Typography variant="h6" sx={{ mt: 0.5, lineHeight: 1.3 }}>
-                  Inventario administrado con Lansweeper
-                </Typography>
+                <Typography variant="h6">FEMAL IT Control</Typography>
               </Box>
               <Box sx={{ width: 44, height: 44, borderRadius: 2, display: 'grid', placeItems: 'center', bgcolor: 'rgba(255,255,255,0.14)', flexShrink: 0 }}>
-                <LanOutlinedIcon />
+                <ShieldOutlinedIcon />
               </Box>
             </Stack>
-            <Typography variant="body2" sx={{ opacity: 0.85 }}>
-              Hardware, software y dispositivos de red
+            <Typography variant="body2" sx={{ opacity: 0.85, mb: 1 }}>
+              No reemplaza herramientas especializadas. Sirve para:
             </Typography>
-            <Chip size="small" label="Herramienta externa" sx={{ mt: 1, bgcolor: 'rgba(255,255,255,0.16)', color: '#fff' }} />
-            <Typography variant="caption" sx={{ display: 'block', mt: 1, opacity: 0.7 }}>
-              El descubrimiento e inventario de activos tecnológicos se realiza mediante Lansweeper como herramienta complementaria.
-            </Typography>
+            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: 1, rowGap: 0.25 }}>
+              {['Comprobar controles', 'Registrar evidencia', 'Detectar incumplimientos', 'Generar alertas', 'Asignar responsables', 'Seguir riesgos y hallazgos'].map((t) => (
+                <Stack key={t} direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
+                  <CheckIcon sx={{ fontSize: 14, opacity: 0.8 }} />
+                  <Typography variant="caption">{t}</Typography>
+                </Stack>
+              ))}
+            </Box>
           </CardContent>
         </Card>
+      </Box>
+
+      <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 700 }}>
+        Indicadores de cumplimiento
+      </Typography>
+      <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, mb: 3, mt: 0.5 }}>
         {kpis.map((k) => (
           <Kpi key={k.label} {...k} />
         ))}
-        <Card>
-          <CardContent>
-            <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-              Avance de atención de riesgos
-            </Typography>
-            <Typography variant="h4" sx={{ mt: 0.5, color: '#2e7d32' }}>
-              {avance}%
-            </Typography>
-            <LinearProgress variant="determinate" value={avance} color="success" sx={{ mt: 1, height: 8, borderRadius: 4 }} />
-            <Typography variant="caption" color="text.secondary">
-              {atendidos} de {riesgos.length} atendidos o aceptados
-            </Typography>
-          </CardContent>
-        </Card>
       </Box>
 
       <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', lg: '5fr 7fr' } }}>
@@ -233,7 +281,7 @@ export default function Dashboard() {
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>
-                Distribución por nivel (riesgos abiertos)
+                Distribución por nivel (abiertos)
               </Typography>
               <Stack spacing={1.5}>
                 {NIVELES.map(({ nivel, color }) => {
@@ -252,6 +300,15 @@ export default function Dashboard() {
                   );
                 })}
               </Stack>
+              <Box sx={{ mt: 3, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+                <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
+                  <Typography variant="body2">Avance de atención</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: 'success.main' }}>
+                    {avance}% · {atendidos} de {riesgos.length}
+                  </Typography>
+                </Stack>
+                <LinearProgress variant="determinate" value={avance} color="success" sx={{ height: 8, borderRadius: 4 }} />
+              </Box>
             </CardContent>
           </Card>
         </Stack>

@@ -1,4 +1,4 @@
-import type { Acceso, NivelRiesgo, Proveedor, Respaldo, Riesgo } from '../types';
+import type { Acceso, EstadoAuditoria, NivelRiesgo, Proveedor, Respaldo, Riesgo } from '../types';
 
 /** puntuación = (probabilidad / 100) × impacto */
 export function calcularPuntuacion(probabilidad: number, impacto: number): number {
@@ -37,8 +37,21 @@ export function formatFecha(fecha: string): string {
 export const accesoRequiereRevision = (a: Acceso) =>
   a.estado !== 'Revocado' && (a.estado === 'Pendiente de revisión' || diasDesde(a.ultimaRevision) > 90);
 
+/**
+ * Estado de auditoría de un respaldo:
+ * - No conforme: no se ejecutó o la restauración falló.
+ * - Conforme: se ejecutó y hay evidencia (una restauración no probada no lo vuelve no conforme).
+ * - Pendiente de verificar: falta evidencia o nunca se ha revisado.
+ */
+export function calcularEstadoAuditoria(r: Respaldo): EstadoAuditoria {
+  if (!r.respaldoEjecutado || r.resultadoRestauracion === 'Fallida') return 'No conforme';
+  if (r.evidenciaDisponible && r.fechaRevision) return 'Conforme';
+  return 'Pendiente de verificar';
+}
+
+/** Respaldos que requieren comprobación: no conformes, por verificar o sin prueba de restauración exitosa */
 export const respaldoPendiente = (r: Respaldo) =>
-  r.estado !== 'Correcto' || r.resultadoRestauracion !== 'Exitosa';
+  r.estadoAuditoria !== 'Conforme' || r.resultadoRestauracion !== 'Exitosa';
 
 export const estaAbierto = (r: Riesgo) => r.estado === 'Abierto' || r.estado === 'En proceso';
 
@@ -75,14 +88,17 @@ export function generarAlertas(
   });
 
   respaldos.forEach((r) => {
-    if (r.estado === 'Fallido')
-      add({ id: `rs-f-${r.id}`, severidad: 'error', modulo: 'Respaldos', titulo: 'Respaldo fallido', detalle: `${r.sistemaEquipo}: el último respaldo falló.`, ruta: '/respaldos' });
+    const base = { modulo: 'Respaldos' as const, ruta: '/respaldos' };
+    if (!r.respaldoEjecutado)
+      add({ ...base, id: `rs-ne-${r.id}`, severidad: 'error', titulo: 'Respaldo no ejecutado', detalle: `${r.sistema}: ${r.herramienta} no registró la ejecución esperada.` });
     if (r.resultadoRestauracion === 'Fallida')
-      add({ id: `rs-rf-${r.id}`, severidad: 'error', modulo: 'Respaldos', titulo: 'Restauración fallida', detalle: `${r.sistemaEquipo}: la prueba de restauración no fue exitosa.`, ruta: '/respaldos' });
+      add({ ...base, id: `rs-rf-${r.id}`, severidad: 'error', titulo: 'Restauración fallida', detalle: `${r.sistema}: la prueba de restauración no fue exitosa.` });
+    if (r.estadoAuditoria === 'No conforme')
+      add({ ...base, id: `rs-nc-${r.id}`, severidad: 'error', titulo: 'Respaldo no conforme', detalle: `${r.sistema}: el control de respaldo no se está cumpliendo.` });
+    if (!r.evidenciaDisponible)
+      add({ ...base, id: `rs-ev-${r.id}`, severidad: 'warning', titulo: 'Sin evidencia de respaldo', detalle: `${r.sistema}: no hay evidencia que compruebe la ejecución.` });
     if (r.resultadoRestauracion === 'No realizada')
-      add({ id: `rs-nr-${r.id}`, severidad: 'warning', modulo: 'Respaldos', titulo: 'Respaldo sin prueba de restauración', detalle: `${r.sistemaEquipo}: nunca se ha comprobado que pueda recuperarse.`, ruta: '/respaldos' });
-    if (r.estado === 'Pendiente de validar')
-      add({ id: `rs-p-${r.id}`, severidad: 'warning', modulo: 'Respaldos', titulo: 'Respaldo pendiente de validar', detalle: `${r.sistemaEquipo}.`, ruta: '/respaldos' });
+      add({ ...base, id: `rs-nr-${r.id}`, severidad: 'info', titulo: 'Pendiente de prueba de restauración', detalle: `${r.sistema}: aún no se ha comprobado que el respaldo pueda recuperarse.` });
   });
 
   proveedores.forEach((p) => {
